@@ -82,3 +82,42 @@
         const cart = [];
         let currentService = null;
 
+        function showSection(sectionId) {
+            document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function selectService(serviceName, price) {
+            currentService = { serviceName, price };
+            showSection('name-form');
+        }
+
+        function addToCart() {
+            const name = document.getElementById('name-input').value.trim();
+            if (!name) {
+                alert("Введите имя.");
+                return;
+            }
+            cart.push({ ...currentService, name });
+            updateCart();
+            alert(`Услуга добавлена в корзину!`);
+            showSection('catalog');
+        }
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            cartItemsDiv.innerHTML = cart.map(item => `<p>${item.serviceName} для ${item.name} - ${item.price}$</p>`).join('');
+        }
+
+        function sendCart() {
+            telegram.sendData(JSON.stringify(cart));
+        }
+
+        function clearCart() {
+            cart.length = 0;
+            updateCart();
+            alert("Корзина очищена.");
+        }
+    </script>
+</body>
+</html>
