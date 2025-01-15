@@ -10,6 +10,9 @@
             padding: 20px;
             background-color: #f4f4f9;
         }
+        h1, h2 {
+            color: #333;
+        }
         .menu, .section {
             display: none;
         }
@@ -18,7 +21,7 @@
         }
         .button {
             display: block;
-            margin: 10px 0;
+            margin: 10px 0; /* Отступы между кнопками */
             padding: 15px;
             background: #4CAF50;
             color: white;
@@ -26,39 +29,141 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
             font-size: 16px;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px; /* Расстояние между кнопками в ряду */
+            margin-top: 20px;
+        }
+        .button-inline {
+            flex: 1;
         }
     </style>
 </head>
 <body>
-    <div id="main-menu" class="active">
-        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии</button>
-        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах</button>
-    </div>
-    <div id="input-form" class="menu">
-        <p id="service-name"></p>
-        <input type="text" id="user-name" placeholder="Введите имя">
-        <button class="button" onclick="addToCart()">Добавить в корзину</button>
-    </div>
-    <script>
-        let selectedService = {};
+    <h1 id="main-title">Главное меню</h1>
 
-        function selectService(serviceName, price) {
-            selectedService = { serviceName, price };
-            document.getElementById("main-menu").classList.remove("active");
-            document.getElementById("input-form").classList.add("active");
-            document.getElementById("service-name").textContent = `Услуга: ${serviceName}`;
+    <!-- Главное меню -->
+    <div id="main-menu" class="menu active">
+        <button class="button" onclick="showSection('catalog')">Каталог молебнов</button>
+        <button class="button" onclick="showSection('cart')">Корзина</button>
+        <button class="button" onclick="showSection('history')">История заказов</button>
+        <button class="button" onclick="showSection('settings')">Настройки</button>
+        <button class="button" onclick="showSection('help')">Помощь</button>
+        <button class="button" onclick="showSection('about')">О проекте</button>
+    </div>
+
+    <!-- Каталог молебнов -->
+    <div id="catalog" class="section">
+        <h2>Каталог молебнов</h2>
+        <button class="button" onclick="addToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="addToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <div class="button-row">
+            <button class="button-inline" onclick="showSection('main-menu')">Назад</button>
+            <button class="button-inline" onclick="showSection('cart')">Корзина</button>
+        </div>
+    </div>
+
+    <!-- Корзина -->
+    <div id="cart" class="section">
+        <h2>Корзина</h2>
+        <div id="cart-items"></div>
+        <button class="button" onclick="checkout()">Оформить заказ</button>
+        <button class="button" onclick="clearCart()">Очистить корзину</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- История заказов -->
+    <div id="history" class="section">
+        <h2>История заказов</h2>
+        <div id="history-content">Ваши прошлые заказы будут отображаться здесь.</div>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Настройки -->
+    <div id="settings" class="section">
+        <h2>Настройки</h2>
+        <p>Здесь вы можете настроить свои предпочтения.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Помощь -->
+    <div id="help" class="section">
+        <h2>Помощь</h2>
+        <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- О проекте -->
+    <div id="about" class="section">
+        <h2>О проекте</h2>
+        <p>Этот бот создан для предоставления удалённых православных услуг.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <script>
+        const cart = [];
+
+        function showSection(sectionId) {
+            // Скрыть все разделы
+            document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
+
+            // Показать выбранный раздел
+            document.getElementById(sectionId).classList.add('active');
+
+            // Обновить заголовок
+            const titles = {
+                'main-menu': 'Главное меню',
+                'catalog': 'Каталог молебнов',
+                'cart': 'Корзина',
+                'history': 'История заказов',
+                'settings': 'Настройки',
+                'help': 'Помощь',
+                'about': 'О проекте',
+            };
+            document.getElementById('main-title').textContent = titles[sectionId];
+
+            // Если раздел "Корзина", обновить содержимое
+            if (sectionId === 'cart') renderCart();
         }
 
-        function addToCart() {
-            const userName = document.getElementById("user-name").value;
-            if (!userName) {
-                alert("Введите имя!");
+        function addToCart(serviceName, price) {
+            const name = prompt("Введите имя, кому будет посвящена услуга:");
+            if (name) {
+                cart.push({ serviceName, price, name });
+                alert(`Добавлено в корзину: ${serviceName} для ${name}`);
+            }
+        }
+
+        function renderCart() {
+            const cartItemsDiv = document.getElementById("cart-items");
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = "<p>Корзина пуста.</p>";
                 return;
             }
-            alert(`Услуга добавлена: ${selectedService.serviceName} для ${userName}`);
-            document.getElementById("main-menu").classList.add("active");
-            document.getElementById("input-form").classList.remove("active");
+            cartItemsDiv.innerHTML = cart.map((item, index) =>
+                `<div>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</div>`
+            ).join("");
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Корзина пуста!");
+                return;
+            }
+            Telegram.WebApp.sendData(JSON.stringify(cart));
+        }
+
+        function clearCart() {
+            cart.length = 0;
+            renderCart();
+            alert("Корзина очищена.");
         }
     </script>
 </body>
