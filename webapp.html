@@ -32,6 +32,9 @@
             cursor: pointer;
             font-size: 16px;
         }
+        .button:hover {
+            background: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -40,9 +43,6 @@
     <div id="main-menu" class="menu active">
         <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
         <button class="button" onclick="showSection('cart')">Корзина</button>
-        <button class="button" onclick="showSection('history')">История заказов</button>
-        <button class="button" onclick="showSection('settings')">Настройки</button>
-        <button class="button" onclick="showSection('help')">Помощь</button>
     </div>
 
     <div id="catalog" class="menu">
@@ -55,8 +55,6 @@
     <div id="cart" class="menu">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
-        <button class="button" onclick="sendCart()">Отправить заказ</button>
-        <button class="button" onclick="clearCart()">Очистить корзину</button>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
@@ -66,6 +64,7 @@
             document.querySelectorAll('.menu').forEach(div => div.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
         }
+
         function selectService(serviceName, price) {
             const name = prompt(`Введите имя для услуги "${serviceName}":`);
             if (name) {
@@ -73,12 +72,16 @@
                 alert(`Услуга "${serviceName}" для "${name}" добавлена в корзину.`);
             }
         }
-        function sendCart() {
-            alert("Заказ отправлен!");
-        }
-        function clearCart() {
-            cart.length = 0;
-            alert("Корзина очищена.");
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = "<p>Корзина пуста.</p>";
+                return;
+            }
+            cartItemsDiv.innerHTML = cart
+                .map((item, index) => `<p>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</p>`)
+                .join('');
         }
     </script>
 </body>
