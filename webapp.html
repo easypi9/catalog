@@ -84,6 +84,27 @@
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
+    <!-- История заказов -->
+    <div id="history" class="menu">
+        <h2>История заказов</h2>
+        <p>Здесь будут отображаться ваши прошлые заказы.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Настройки -->
+    <div id="settings" class="menu">
+        <h2>Настройки</h2>
+        <p>Эта функция будет добавлена в будущих обновлениях.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Помощь -->
+    <div id="help" class="menu">
+        <h2>Помощь</h2>
+        <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
     <!-- Модальное окно -->
     <div id="modal" class="modal">
         <div class="modal-content">
@@ -99,21 +120,25 @@
         const cart = [];
         let currentService = null;
 
+        // Показать раздел меню
         function showSection(sectionId) {
             document.querySelectorAll('.menu').forEach(div => div.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
         }
 
+        // Открыть модальное окно
         function openModal(serviceName, price) {
             currentService = { serviceName, price };
             document.getElementById('modal-service-name').textContent = `Услуга: ${serviceName}`;
             document.getElementById('modal').style.display = 'flex';
         }
 
+        // Закрыть модальное окно
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
         }
 
+        // Добавить услугу в корзину
         function addToCart() {
             const name = document.getElementById('modal-name-input').value.trim();
             if (!name) {
@@ -126,6 +151,7 @@
             alert(`Услуга "${currentService.serviceName}" добавлена в корзину.`);
         }
 
+        // Обновить корзину
         function updateCart() {
             const cartDiv = document.getElementById('cart-items');
             cartDiv.innerHTML = cart.length > 0
@@ -133,10 +159,12 @@
                 : "<p>Корзина пуста.</p>";
         }
 
+        // Отправить заказ
         function sendCart() {
             alert("Заказ отправлен!");
         }
 
+        // Очистить корзину
         function clearCart() {
             cart.length = 0;
             updateCart();
