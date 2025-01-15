@@ -14,7 +14,7 @@
             text-align: center;
             color: #333;
         }
-        .menu, .section {
+        .menu {
             display: none;
         }
         .active {
@@ -35,14 +35,6 @@
         .button:hover {
             background: #45a049;
         }
-        .buttons-row {
-            display: flex;
-            justify-content: space-between;
-        }
-        .buttons-row .button {
-            flex: 1;
-            margin: 0 5px;
-        }
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -60,6 +52,36 @@
         .cart-item button:hover {
             background-color: #d32f2f;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-content input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .modal-content button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -69,20 +91,14 @@
     <div id="main-menu" class="menu active">
         <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
         <button class="button" onclick="showSection('cart')">Корзина</button>
-        <button class="button" onclick="showSection('history')">История заказов</button>
-        <button class="button" onclick="showSection('settings')">Настройки</button>
-        <button class="button" onclick="showSection('help')">Помощь</button>
     </div>
 
     <!-- Каталог -->
     <div id="catalog" class="menu">
         <h2>Каталог услуг</h2>
-        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
-        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
-        <div class="buttons-row">
-            <button class="button" onclick="showSection('main-menu')">Назад</button>
-            <button class="button" onclick="showSection('cart')">Корзина</button>
-        </div>
+        <button class="button" onclick="openModal('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="openModal('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <!-- Корзина -->
@@ -94,30 +110,21 @@
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
-    <!-- История заказов -->
-    <div id="history" class="menu">
-        <h2>История заказов</h2>
-        <p id="history-items">Ваша история заказов пуста.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- Настройки -->
-    <div id="settings" class="menu">
-        <h2>Настройки</h2>
-        <p>Эта функция будет добавлена в будущем.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- Помощь -->
-    <div id="help" class="menu">
-        <h2>Помощь</h2>
-        <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Введите имя</h2>
+            <p id="modal-service-name"></p>
+            <input type="text" id="modal-input" placeholder="Введите имя">
+            <button class="button" onclick="addToCart()">Добавить</button>
+            <button class="button" onclick="closeModal()">Отмена</button>
+        </div>
     </div>
 
     <script>
         const telegram = window.Telegram.WebApp; // Подключение Telegram Web App API
         const cart = []; // Корзина
+        let currentService = null;
 
         telegram.ready(); // Инициализация Telegram Web App
 
@@ -131,21 +138,32 @@
             mainTitle.style.display = sectionId === 'main-menu' ? 'block' : 'none';
         }
 
-        // Выбор услуги
-        function selectService(serviceName, price) {
-            // Проверяем, поддерживает ли Telegram Web App prompt()
-            const name = prompt(`Введите имя, для кого вы хотите оказать услугу "${serviceName}":`);
-            if (name) {
-                const item = { serviceName, price, name };
-                cart.push(item);
-                updateCart();
-                alert(`Услуга "${serviceName}" для "${name}" добавлена в корзину.`);
-            } else {
-                alert("Имя не было введено. Услуга не добавлена.");
-            }
+        // Открыть модальное окно
+        function openModal(serviceName, price) {
+            currentService = { serviceName, price };
+            document.getElementById('modal-service-name').textContent = `Услуга: ${serviceName}`;
+            document.getElementById('modal').style.display = 'flex';
         }
 
-        // Обновление корзины
+        // Закрыть модальное окно
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Добавить услугу в корзину
+        function addToCart() {
+            const name = document.getElementById('modal-input').value.trim();
+            if (!name) {
+                alert("Введите имя.");
+                return;
+            }
+            cart.push({ ...currentService, name });
+            updateCart();
+            closeModal();
+            alert(`Услуга "${currentService.serviceName}" для "${name}" добавлена в корзину.`);
+        }
+
+        // Обновить корзину
         function updateCart() {
             const cartItemsDiv = document.getElementById('cart-items');
             if (cart.length === 0) {
@@ -160,13 +178,13 @@
             `).join('');
         }
 
-        // Удаление услуги из корзины
+        // Удалить услугу из корзины
         function removeFromCart(index) {
             cart.splice(index, 1);
             updateCart();
         }
 
-        // Отправка корзины
+        // Отправить корзину
         function sendCart() {
             if (cart.length === 0) {
                 alert("Корзина пуста!");
@@ -178,7 +196,7 @@
             updateCart();
         }
 
-        // Очистка корзины
+        // Очистить корзину
         function clearCart() {
             cart.length = 0;
             updateCart();
