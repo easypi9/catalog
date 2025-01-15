@@ -55,6 +55,8 @@
     <div id="cart" class="menu">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
+        <button class="button" onclick="sendCart()">Отправить заказ</button>
+        <button class="button" onclick="clearCart()">Очистить корзину</button>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
@@ -70,6 +72,13 @@
                 cart.push({ serviceName, price, name });
                 alert(`Услуга "${serviceName}" для "${name}" добавлена в корзину.`);
             }
+        }
+        function sendCart() {
+            alert("Заказ отправлен!");
+        }
+        function clearCart() {
+            cart.length = 0;
+            alert("Корзина очищена.");
         }
     </script>
 </body>
