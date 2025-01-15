@@ -11,8 +11,9 @@
             background-color: #f4f4f9;
         }
         h1 {
+            display: block;
+            text-align: center;
             color: #333;
-            display: none;
         }
         .menu, .section {
             display: none;
@@ -32,109 +33,37 @@
             cursor: pointer;
             font-size: 16px;
         }
-        .button:hover {
-            background: #45a049;
-        }
-        .buttons-row {
-            display: flex;
-            justify-content: space-between;
-        }
-        .buttons-row .button {
-            flex: 1;
-            margin: 0 5px;
-        }
     </style>
 </head>
 <body>
     <h1 id="main-title">Главное меню</h1>
-
-    <!-- Главное меню -->
     <div id="main-menu" class="menu active">
         <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
         <button class="button" onclick="showSection('cart')">Корзина</button>
-        <button class="button" onclick="showSection('history')">История заказов</button>
-        <button class="button" onclick="showSection('settings')">Настройки</button>
-        <button class="button" onclick="showSection('help')">Помощь</button>
     </div>
-
-    <!-- Каталог услуг -->
     <div id="catalog" class="menu">
         <h2>Каталог услуг</h2>
-        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
-        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
-        <div class="buttons-row">
-            <button class="button" onclick="showSection('main-menu')">Назад</button>
-            <button class="button" onclick="showSection('cart')">Корзина</button>
-        </div>
+        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии</button>
+        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
-
-    <!-- Корзина -->
     <div id="cart" class="menu">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
-        <button class="button" onclick="sendCart()">Отправить заказ</button>
-        <button class="button" onclick="clearCart()">Очистить корзину</button>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
-
-    <!-- История заказов -->
-    <div id="history" class="menu">
-        <h2>История заказов</h2>
-        <p>Здесь будут отображаться ваши прошлые заказы.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- Настройки -->
-    <div id="settings" class="menu">
-        <h2>Настройки</h2>
-        <p>Эта функция будет добавлена в будущих обновлениях.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- Помощь -->
-    <div id="help" class="menu">
-        <h2>Помощь</h2>
-        <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
     <script>
         const cart = [];
-        let currentService = null;
-
         function showSection(sectionId) {
             document.querySelectorAll('.menu').forEach(div => div.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-
-            // Показывать "Главное меню" только на главной странице
-            const mainTitle = document.getElementById('main-title');
-            mainTitle.style.display = sectionId === 'main-menu' ? 'block' : 'none';
         }
-
         function selectService(serviceName, price) {
-            currentService = { serviceName, price };
-            const name = prompt(`Введите имя, кому будет посвящена услуга: ${serviceName}`);
+            const name = prompt(`Введите имя для услуги "${serviceName}":`);
             if (name) {
-                cart.push({ ...currentService, name });
-                updateCart();
+                cart.push({ serviceName, price, name });
                 alert(`Услуга "${serviceName}" для "${name}" добавлена в корзину.`);
             }
-        }
-
-        function updateCart() {
-            const cartItemsDiv = document.getElementById('cart-items');
-            cartItemsDiv.innerHTML = cart.length > 0
-                ? cart.map((item, index) => `<p>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</p>`).join("")
-                : "<p>Корзина пуста.</p>";
-        }
-
-        function sendCart() {
-            alert("Заказ отправлен!");
-        }
-
-        function clearCart() {
-            cart.length = 0;
-            updateCart();
         }
     </script>
 </body>
