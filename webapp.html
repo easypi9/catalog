@@ -10,6 +10,9 @@
             padding: 20px;
             background-color: #f4f4f9;
         }
+        h1, h2 {
+            color: #333;
+        }
         .menu, .section {
             display: none;
         }
@@ -28,37 +31,106 @@
             cursor: pointer;
             font-size: 16px;
         }
+        .button:hover {
+            background: #45a049;
+        }
+        .input-box {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <div id="main-menu" class="active">
-        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии</button>
-        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах</button>
-    </div>
-    <div id="input-form" class="menu">
-        <p id="service-name"></p>
-        <input type="text" id="user-name" placeholder="Введите имя">
-        <button class="button" onclick="addToCart()">Добавить в корзину</button>
-    </div>
-    <script>
-        let selectedService = {};
+    <h1 id="main-title">Каталог услуг</h1>
 
-        function selectService(serviceName, price) {
-            selectedService = { serviceName, price };
-            document.getElementById("main-menu").classList.remove("active");
-            document.getElementById("input-form").classList.add("active");
-            document.getElementById("service-name").textContent = `Услуга: ${serviceName}`;
+    <!-- Каталог услуг -->
+    <div id="catalog" class="menu active">
+        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+    </div>
+
+    <!-- Форма ввода имени -->
+    <div id="name-form" class="menu">
+        <h2>Введите имя</h2>
+        <p id="selected-service"></p>
+        <input type="text" id="name-input" class="input-box" placeholder="Введите имя">
+        <button class="button" onclick="addToCart()">Добавить в корзину</button>
+        <button class="button" onclick="showCatalog()">Отмена</button>
+    </div>
+
+    <!-- Корзина -->
+    <div id="cart" class="menu">
+        <h2>Корзина</h2>
+        <div id="cart-items"></div>
+        <button class="button" onclick="sendCart()">Отправить заказ</button>
+        <button class="button" onclick="clearCart()">Очистить корзину</button>
+        <button class="button" onclick="showCatalog()">Назад в каталог</button>
+    </div>
+
+    <script>
+        const telegram = window.Telegram.WebApp;
+        const cart = [];
+        let selectedService = null;
+
+        // Показать каталог
+        function showCatalog() {
+            document.querySelectorAll('.menu').forEach(div => div.classList.remove('active'));
+            document.getElementById('catalog').classList.add('active');
+            document.getElementById('main-title').textContent = 'Каталог услуг';
         }
 
+        // Показать форму для ввода имени
+        function selectService(serviceName, price) {
+            selectedService = { serviceName, price };
+            document.querySelectorAll('.menu').forEach(div => div.classList.remove('active'));
+            document.getElementById('name-form').classList.add('active');
+            document.getElementById('selected-service').textContent = `Услуга: ${serviceName} (${price}$)`;
+        }
+
+        // Добавить услугу в корзину
         function addToCart() {
-            const userName = document.getElementById("user-name").value;
-            if (!userName) {
-                alert("Введите имя!");
+            const name = document.getElementById('name-input').value.trim();
+            if (!name) {
+                alert("Введите имя, кому вы хотите посвятить услугу.");
                 return;
             }
-            alert(`Услуга добавлена: ${selectedService.serviceName} для ${userName}`);
-            document.getElementById("main-menu").classList.add("active");
-            document.getElementById("input-form").classList.remove("active");
+            cart.push({ ...selectedService, name });
+            alert(`Услуга "${selectedService.serviceName}" для "${name}" добавлена в корзину.`);
+            updateCart();
+            showCatalog();
+        }
+
+        // Обновить содержимое корзины
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = "<p>Корзина пуста.</p>";
+                return;
+            }
+            cartItemsDiv.innerHTML = cart.map((item, index) =>
+                `<p>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</p>`
+            ).join("");
+        }
+
+        // Отправить заказ
+        function sendCart() {
+            if (cart.length === 0) {
+                alert("Корзина пуста!");
+                return;
+            }
+            telegram.sendData(JSON.stringify(cart));
+            alert("Заказ отправлен администратору!");
+        }
+
+        // Очистить корзину
+        function clearCart() {
+            cart.length = 0;
+            updateCart();
+            alert("Корзина очищена.");
         }
     </script>
 </body>
