@@ -133,12 +133,15 @@
 
         // Выбор услуги
         function selectService(serviceName, price) {
+            // Проверяем, поддерживает ли Telegram Web App prompt()
             const name = prompt(`Введите имя, для кого вы хотите оказать услугу "${serviceName}":`);
             if (name) {
                 const item = { serviceName, price, name };
                 cart.push(item);
                 updateCart();
                 alert(`Услуга "${serviceName}" для "${name}" добавлена в корзину.`);
+            } else {
+                alert("Имя не было введено. Услуга не добавлена.");
             }
         }
 
