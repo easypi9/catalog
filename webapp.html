@@ -13,6 +13,12 @@
         h1, h2 {
             color: #333;
         }
+        .menu, .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
         .button {
             display: block;
             margin: 10px 0;
@@ -31,16 +37,77 @@
     </style>
 </head>
 <body>
-    <h1>Каталог услуг</h1>
-    <div id="catalog">
+    <h1 id="main-title">Главное меню</h1>
+
+    <!-- Главное меню -->
+    <div id="main-menu" class="menu active">
+        <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
+        <button class="button" onclick="showSection('cart')">Корзина</button>
+        <button class="button" onclick="showSection('history')">История заказов</button>
+        <button class="button" onclick="showSection('settings')">Настройки</button>
+        <button class="button" onclick="showSection('help')">Помощь</button>
+    </div>
+
+    <!-- Каталог услуг -->
+    <div id="catalog" class="section">
+        <h2>Каталог услуг</h2>
         <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
         <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
-    <div id="cart"></div>
+
+    <!-- Корзина -->
+    <div id="cart" class="section">
+        <h2>Корзина</h2>
+        <div id="cart-items"></div>
+        <button class="button" onclick="sendCart()">Отправить заказ</button>
+        <button class="button" onclick="clearCart()">Очистить корзину</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- История заказов -->
+    <div id="history" class="section">
+        <h2>История заказов</h2>
+        <p>Ваши прошлые заказы будут отображаться здесь.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Настройки -->
+    <div id="settings" class="section">
+        <h2>Настройки</h2>
+        <p>Здесь вы можете настроить свои предпочтения.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Помощь -->
+    <div id="help" class="section">
+        <h2>Помощь</h2>
+        <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
 
     <script>
         const telegram = window.Telegram.WebApp;
         const cart = [];
+
+        function showSection(sectionId) {
+            // Скрыть все разделы
+            document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
+
+            // Показать выбранный раздел
+            document.getElementById(sectionId).classList.add('active');
+
+            // Обновить заголовок
+            const titles = {
+                'main-menu': 'Главное меню',
+                'catalog': 'Каталог услуг',
+                'cart': 'Корзина',
+                'history': 'История заказов',
+                'settings': 'Настройки',
+                'help': 'Помощь'
+            };
+            document.getElementById('main-title').textContent = titles[sectionId];
+        }
 
         function selectService(serviceName, price) {
             const name = prompt(`Введите имя, кому будет посвящена услуга "${serviceName}":`);
@@ -52,16 +119,14 @@
         }
 
         function updateCart() {
-            const cartDiv = document.getElementById('cart');
-            cartDiv.innerHTML = '<h2>Ваша корзина:</h2>';
+            const cartItemsDiv = document.getElementById('cart-items');
             if (cart.length === 0) {
-                cartDiv.innerHTML += '<p>Корзина пуста</p>';
+                cartItemsDiv.innerHTML = "<p>Корзина пуста.</p>";
                 return;
             }
-            cart.forEach((item, index) => {
-                cartDiv.innerHTML += `<p>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</p>`;
-            });
-            cartDiv.innerHTML += '<button class="button" onclick="sendCart()">Отправить заказ</button>';
+            cartItemsDiv.innerHTML = cart.map((item, index) =>
+                `<div>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</div>`
+            ).join("");
         }
 
         function sendCart() {
@@ -71,6 +136,12 @@
             }
             telegram.sendData(JSON.stringify(cart));
             alert("Заказ отправлен администратору!");
+        }
+
+        function clearCart() {
+            cart.length = 0;
+            updateCart();
+            alert("Корзина очищена.");
         }
     </script>
 </body>
