@@ -11,7 +11,6 @@
             background-color: #f4f4f9;
         }
         h1 {
-            display: block;
             text-align: center;
             color: #333;
         }
@@ -37,21 +36,28 @@
 </head>
 <body>
     <h1 id="main-title">Главное меню</h1>
+
     <div id="main-menu" class="menu active">
         <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
         <button class="button" onclick="showSection('cart')">Корзина</button>
+        <button class="button" onclick="showSection('history')">История заказов</button>
+        <button class="button" onclick="showSection('settings')">Настройки</button>
+        <button class="button" onclick="showSection('help')">Помощь</button>
     </div>
+
     <div id="catalog" class="menu">
         <h2>Каталог услуг</h2>
         <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии</button>
         <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах</button>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
+
     <div id="cart" class="menu">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
+
     <script>
         const cart = [];
         function showSection(sectionId) {
