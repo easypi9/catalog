@@ -14,10 +14,10 @@
             text-align: center;
             color: #333;
         }
-        .menu, .section {
+        .menu {
             display: none;
         }
-        .active {
+        .menu.active {
             display: block;
         }
         .button {
@@ -57,6 +57,7 @@
 <body>
     <h1 id="main-title">Главное меню</h1>
 
+    <!-- Главное меню -->
     <div id="main-menu" class="menu active">
         <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
         <button class="button" onclick="showSection('cart')">Корзина</button>
@@ -65,10 +66,132 @@
         <button class="button" onclick="showSection('help')">Помощь</button>
     </div>
 
-    <!-- Остальные разделы такие же, как были в предыдущем коде. -->
-    <!-- Добавлены разделы для Каталога, Корзины, Истории заказов и пр. -->
+    <!-- Каталог услуг -->
+    <div id="catalog" class="menu">
+        <h2>Каталог услуг</h2>
+        <button class="button" onclick="openModal('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="openModal('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <div>
+            <button class="button" onclick="showSection('main-menu')">Назад</button>
+            <button class="button" onclick="showSection('cart')">Корзина</button>
+        </div>
+    </div>
+
+    <!-- Корзина -->
+    <div id="cart" class="menu">
+        <h2>Корзина</h2>
+        <div id="cart-items"></div>
+        <button class="button" onclick="sendCart()">Отправить заказ</button>
+        <button class="button" onclick="clearCart()">Очистить корзину</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- История заказов -->
+    <div id="history" class="menu">
+        <h2>История заказов</h2>
+        <p id="history-items">Ваша история заказов пуста.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Настройки -->
+    <div id="settings" class="menu">
+        <h2>Настройки</h2>
+        <p>Настройки пока не доступны.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Помощь -->
+    <div id="help" class="menu">
+        <h2>Помощь</h2>
+        <p>Этот бот предназначен для заказа православных услуг, таких как молебны и установка свечей.</p>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; width: 90%; max-width: 400px; margin: auto;">
+            <h2>Введите имя</h2>
+            <input type="text" id="modal-input" placeholder="Введите имя" style="width: 80%; padding: 10px;">
+            <div style="margin-top: 10px;">
+                <button class="button" style="margin-right: 5px;" onclick="addToCart()">Добавить</button>
+                <button class="button" onclick="closeModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Сюда вставим исправления для работы с формой, корзиной и т.д.
+        const cart = [];
+        let currentService = null;
+
+        // Переключение между разделами
+        function showSection(sectionId) {
+            document.querySelectorAll('.menu').forEach(div => div.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById('main-title').style.display = sectionId === 'main-menu' ? 'block' : 'none';
+        }
+
+        // Открытие модального окна
+        function openModal(serviceName, price) {
+            currentService = { serviceName, price };
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Добавление услуги в корзину
+        function addToCart() {
+            const name = document.getElementById('modal-input').value.trim();
+            if (!name) {
+                alert("Введите имя!");
+                return;
+            }
+            cart.push({ ...currentService, name });
+            updateCart();
+            closeModal();
+            alert(`Услуга "${currentService.serviceName}" для "${name}" добавлена в корзину.`);
+        }
+
+        // Обновление корзины
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = "<p>Ваша корзина пуста.</p>";
+                return;
+            }
+            cartItemsDiv.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <span>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</span>
+                    <button onclick="removeFromCart(${index})">Удалить</button>
+                </div>
+            `).join('');
+        }
+
+        // Удаление услуги из корзины
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        // Очистка корзины
+        function clearCart() {
+            cart.length = 0;
+            updateCart();
+            alert("Корзина очищена.");
+        }
+
+        // Отправка заказа
+        function sendCart() {
+            if (cart.length === 0) {
+                alert("Корзина пуста!");
+                return;
+            }
+            alert("Ваш заказ отправлен!");
+            cart.length = 0;
+            updateCart();
+        }
     </script>
 </body>
 </html>
