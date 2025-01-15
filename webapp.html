@@ -21,6 +21,7 @@
         }
         .button {
             display: block;
+            margin: 10px 0; /* Отступы между кнопками */
             padding: 15px;
             background: #4CAF50;
             color: white;
@@ -34,10 +35,19 @@
         .button:hover {
             background: #45a049;
         }
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px; /* Расстояние между кнопками в ряду */
+            margin-top: 20px;
+        }
+        .button-inline {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
-    <h1>Православные услуги</h1>
+    <h1 id="main-title">Главное меню</h1>
 
     <!-- Главное меню -->
     <div id="main-menu" class="menu active">
@@ -54,7 +64,10 @@
         <h2>Каталог молебнов</h2>
         <button class="button" onclick="addToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
         <button class="button" onclick="addToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
+        <div class="button-row">
+            <button class="button-inline" onclick="showSection('main-menu')">Назад</button>
+            <button class="button-inline" onclick="showSection('cart')">Корзина</button>
+        </div>
     </div>
 
     <!-- Корзина -->
@@ -98,8 +111,26 @@
         const cart = [];
 
         function showSection(sectionId) {
+            // Скрыть все разделы
             document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
+
+            // Показать выбранный раздел
             document.getElementById(sectionId).classList.add('active');
+
+            // Обновить заголовок
+            const titles = {
+                'main-menu': 'Главное меню',
+                'catalog': 'Каталог молебнов',
+                'cart': 'Корзина',
+                'history': 'История заказов',
+                'settings': 'Настройки',
+                'help': 'Помощь',
+                'about': 'О проекте',
+            };
+            document.getElementById('main-title').textContent = titles[sectionId];
+
+            // Если раздел "Корзина", обновить содержимое
+            if (sectionId === 'cart') renderCart();
         }
 
         function addToCart(serviceName, price) {
