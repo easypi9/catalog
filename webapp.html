@@ -34,6 +34,14 @@
         .button:hover {
             background: #45a049;
         }
+        .input-box {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -51,9 +59,18 @@
     <!-- Каталог услуг -->
     <div id="catalog" class="section">
         <h2>Каталог услуг</h2>
-        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
-        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <button class="button" onclick="prepareToAddToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="prepareToAddToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
+    </div>
+
+    <!-- Форма ввода имени -->
+    <div id="name-form" class="section">
+        <h2>Введите имя</h2>
+        <p id="selected-service"></p>
+        <input type="text" id="name-input" class="input-box" placeholder="Введите имя">
+        <button class="button" onclick="addToCart()">Добавить в корзину</button>
+        <button class="button" onclick="showSection('catalog')">Отмена</button>
     </div>
 
     <!-- Корзина -->
@@ -89,18 +106,15 @@
     <script>
         const telegram = window.Telegram.WebApp;
         const cart = [];
+        let currentService = null;
 
         function showSection(sectionId) {
-            // Скрыть все разделы
             document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
-
-            // Показать выбранный раздел
             document.getElementById(sectionId).classList.add('active');
-
-            // Обновить заголовок
             const titles = {
                 'main-menu': 'Главное меню',
                 'catalog': 'Каталог услуг',
+                'name-form': 'Введите имя',
                 'cart': 'Корзина',
                 'history': 'История заказов',
                 'settings': 'Настройки',
@@ -109,13 +123,23 @@
             document.getElementById('main-title').textContent = titles[sectionId];
         }
 
-        function selectService(serviceName, price) {
-            const name = prompt(`Введите имя, кому будет посвящена услуга "${serviceName}":`);
-            if (name) {
-                cart.push({ serviceName, name, price });
-                alert(`Услуга "${serviceName}" для "${name}" добавлена в корзину!`);
-                updateCart();
+        function prepareToAddToCart(serviceName, price) {
+            currentService = { serviceName, price };
+            document.getElementById('selected-service').textContent = `Услуга: ${serviceName} (${price}$)`;
+            document.getElementById('name-input').value = '';
+            showSection('name-form');
+        }
+
+        function addToCart() {
+            const name = document.getElementById('name-input').value.trim();
+            if (!name) {
+                alert("Пожалуйста, введите имя.");
+                return;
             }
+            cart.push({ ...currentService, name });
+            alert(`Услуга "${currentService.serviceName}" для "${name}" добавлена в корзину!`);
+            updateCart();
+            showSection('catalog');
         }
 
         function updateCart() {
