@@ -47,7 +47,6 @@
 <body>
     <h1 id="main-title">Главное меню</h1>
 
-    <!-- Главное меню -->
     <div id="main-menu" class="menu active">
         <button class="button" onclick="showSection('catalog')">Каталог услуг</button>
         <button class="button" onclick="showSection('cart')">Корзина</button>
@@ -56,24 +55,20 @@
         <button class="button" onclick="showSection('help')">Помощь</button>
     </div>
 
-    <!-- Каталог услуг -->
     <div id="catalog" class="section">
         <h2>Каталог услуг</h2>
-        <button class="button" onclick="prepareToAddToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
-        <button class="button" onclick="prepareToAddToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
-    <!-- Форма ввода имени -->
     <div id="name-form" class="section">
         <h2>Введите имя</h2>
-        <p id="selected-service"></p>
         <input type="text" id="name-input" class="input-box" placeholder="Введите имя">
         <button class="button" onclick="addToCart()">Добавить в корзину</button>
         <button class="button" onclick="showSection('catalog')">Отмена</button>
     </div>
 
-    <!-- Корзина -->
     <div id="cart" class="section">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
@@ -87,55 +82,3 @@
         const cart = [];
         let currentService = null;
 
-        function showSection(sectionId) {
-            document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-        }
-
-        function prepareToAddToCart(serviceName, price) {
-            currentService = { serviceName, price };
-            document.getElementById('selected-service').textContent = `Услуга: ${serviceName} (${price}$)`;
-            document.getElementById('name-input').value = '';
-            showSection('name-form');
-        }
-
-        function addToCart() {
-            const name = document.getElementById('name-input').value.trim();
-            if (!name) {
-                alert("Пожалуйста, введите имя.");
-                return;
-            }
-            cart.push({ ...currentService, name });
-            alert(`Услуга "${currentService.serviceName}" для "${name}" добавлена в корзину!`);
-            updateCart();
-            showSection('catalog');
-        }
-
-        function updateCart() {
-            const cartItemsDiv = document.getElementById('cart-items');
-            if (cart.length === 0) {
-                cartItemsDiv.innerHTML = "<p>Корзина пуста.</p>";
-                return;
-            }
-            cartItemsDiv.innerHTML = cart.map((item, index) =>
-                `<div>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</div>`
-            ).join("");
-        }
-
-        function sendCart() {
-            if (cart.length === 0) {
-                alert("Корзина пуста!");
-                return;
-            }
-            telegram.sendData(JSON.stringify(cart));
-            alert("Заказ отправлен администратору!");
-        }
-
-        function clearCart() {
-            cart.length = 0;
-            updateCart();
-            alert("Корзина очищена.");
-        }
-    </script>
-</body>
-</html>
