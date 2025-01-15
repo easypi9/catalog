@@ -10,14 +10,14 @@
             padding: 20px;
             background-color: #f4f4f9;
         }
-        h1 {
+        h1, h2 {
             color: #333;
         }
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
+        .menu, .section {
+            display: none;
+        }
+        .active {
+            display: block;
         }
         .button {
             display: block;
@@ -34,104 +34,72 @@
         .button:hover {
             background: #45a049;
         }
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
-    <h1>Главное меню</h1>
+    <h1>Православные услуги</h1>
 
     <!-- Главное меню -->
-    <div id="main-menu" class="menu">
-        <button class="button" onclick="showCatalog()">Каталог молебнов</button>
-        <button class="button" onclick="showCart()">Корзина</button>
-        <button class="button" onclick="showHistory()">История заказов</button>
-        <button class="button" onclick="showSettings()">Настройки</button>
-        <button class="button" onclick="showHelp()">Помощь</button>
-        <button class="button" onclick="showAbout()">О проекте</button>
+    <div id="main-menu" class="menu active">
+        <button class="button" onclick="showSection('catalog')">Каталог молебнов</button>
+        <button class="button" onclick="showSection('cart')">Корзина</button>
+        <button class="button" onclick="showSection('history')">История заказов</button>
+        <button class="button" onclick="showSection('settings')">Настройки</button>
+        <button class="button" onclick="showSection('help')">Помощь</button>
+        <button class="button" onclick="showSection('about')">О проекте</button>
     </div>
 
     <!-- Каталог молебнов -->
-    <div id="catalog" class="hidden">
+    <div id="catalog" class="section">
         <h2>Каталог молебнов</h2>
         <button class="button" onclick="addToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
         <button class="button" onclick="addToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
-        <button class="button" onclick="goToMainMenu()">Назад</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <!-- Корзина -->
-    <div id="cart" class="hidden">
+    <div id="cart" class="section">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
         <button class="button" onclick="checkout()">Оформить заказ</button>
         <button class="button" onclick="clearCart()">Очистить корзину</button>
-        <button class="button" onclick="goToMainMenu()">Назад</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <!-- История заказов -->
-    <div id="history" class="hidden">
+    <div id="history" class="section">
         <h2>История заказов</h2>
         <div id="history-content">Ваши прошлые заказы будут отображаться здесь.</div>
-        <button class="button" onclick="goToMainMenu()">Назад</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <!-- Настройки -->
-    <div id="settings" class="hidden">
+    <div id="settings" class="section">
         <h2>Настройки</h2>
         <p>Здесь вы можете настроить свои предпочтения.</p>
-        <button class="button" onclick="goToMainMenu()">Назад</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <!-- Помощь -->
-    <div id="help" class="hidden">
+    <div id="help" class="section">
         <h2>Помощь</h2>
         <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
-        <button class="button" onclick="goToMainMenu()">Назад</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <!-- О проекте -->
-    <div id="about" class="hidden">
+    <div id="about" class="section">
         <h2>О проекте</h2>
         <p>Этот бот создан для предоставления удалённых православных услуг.</p>
-        <button class="button" onclick="goToMainMenu()">Назад</button>
+        <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
     <script>
         const cart = [];
 
         function showSection(sectionId) {
-            document.querySelectorAll('.menu, .hidden').forEach(div => div.classList.add('hidden'));
-            document.getElementById(sectionId).classList.remove('hidden');
-        }
-
-        function goToMainMenu() {
-            showSection('main-menu');
-        }
-
-        function showCatalog() {
-            showSection('catalog');
-        }
-
-        function showCart() {
-            showSection('cart');
-            renderCart();
-        }
-
-        function showHistory() {
-            showSection('history');
-        }
-
-        function showSettings() {
-            showSection('settings');
-        }
-
-        function showHelp() {
-            showSection('help');
-        }
-
-        function showAbout() {
-            showSection('about');
+            document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
 
         function addToCart(serviceName, price) {
