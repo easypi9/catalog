@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог молебнов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Каталог молебнов</h1>
+    <div id="catalog">
+        <button class="button" onclick="selectService('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
+        <button class="button" onclick="selectService('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+    </div>
+
+    <script>
+        function selectService(serviceName, price) {
+            Telegram.WebApp.sendData(JSON.stringify({ serviceName, price }));
+        }
+    </script>
+</body>
+</html>
