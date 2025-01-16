@@ -21,7 +21,7 @@
         }
         .button {
             display: block;
-            margin: 10px 0; /* Отступы между кнопками */
+            margin: 10px 0;
             padding: 15px;
             background: #4CAF50;
             color: white;
@@ -35,14 +35,25 @@
         .button:hover {
             background: #45a049;
         }
-        .button-row {
+        .cart-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
-            gap: 10px; /* Расстояние между кнопками в ряду */
-            margin-top: 20px;
+            align-items: center;
         }
-        .button-inline {
-            flex: 1;
+        .cart-item button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cart-item button:hover {
+            background-color: #d32f2f;
         }
     </style>
 </head>
@@ -59,14 +70,14 @@
         <button class="button" onclick="showSection('about')">О проекте</button>
     </div>
 
-    <!-- Каталог молебнов -->
+    <!-- Каталог -->
     <div id="catalog" class="section">
         <h2>Каталог молебнов</h2>
         <button class="button" onclick="addToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
         <button class="button" onclick="addToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
-        <div class="button-row">
-            <button class="button-inline" onclick="showSection('main-menu')">Назад</button>
-            <button class="button-inline" onclick="showSection('cart')">Корзина</button>
+        <div>
+            <button class="button" onclick="showSection('main-menu')">Назад</button>
+            <button class="button" onclick="showSection('cart')">Корзина</button>
         </div>
     </div>
 
@@ -74,36 +85,8 @@
     <div id="cart" class="section">
         <h2>Корзина</h2>
         <div id="cart-items"></div>
-        <button class="button" onclick="checkout()">Оформить заказ</button>
+        <button class="button" onclick="checkout()">Оплатить заказ</button>
         <button class="button" onclick="clearCart()">Очистить корзину</button>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- История заказов -->
-    <div id="history" class="section">
-        <h2>История заказов</h2>
-        <div id="history-content">Ваши прошлые заказы будут отображаться здесь.</div>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- Настройки -->
-    <div id="settings" class="section">
-        <h2>Настройки</h2>
-        <p>Здесь вы можете настроить свои предпочтения.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- Помощь -->
-    <div id="help" class="section">
-        <h2>Помощь</h2>
-        <p>Этот бот позволяет заказывать православные услуги, такие как молебны и установка свечей.</p>
-        <button class="button" onclick="showSection('main-menu')">Назад</button>
-    </div>
-
-    <!-- О проекте -->
-    <div id="about" class="section">
-        <h2>О проекте</h2>
-        <p>Этот бот создан для предоставления удалённых православных услуг.</p>
         <button class="button" onclick="showSection('main-menu')">Назад</button>
     </div>
 
@@ -111,25 +94,15 @@
         const cart = [];
 
         function showSection(sectionId) {
-            // Скрыть все разделы
             document.querySelectorAll('.menu, .section').forEach(div => div.classList.remove('active'));
-
-            // Показать выбранный раздел
             document.getElementById(sectionId).classList.add('active');
 
-            // Обновить заголовок
             const titles = {
                 'main-menu': 'Главное меню',
                 'catalog': 'Каталог молебнов',
-                'cart': 'Корзина',
-                'history': 'История заказов',
-                'settings': 'Настройки',
-                'help': 'Помощь',
-                'about': 'О проекте',
+                'cart': 'Корзина'
             };
-            document.getElementById('main-title').textContent = titles[sectionId];
-
-            // Если раздел "Корзина", обновить содержимое
+            document.getElementById('main-title').textContent = titles[sectionId] || 'Меню';
             if (sectionId === 'cart') renderCart();
         }
 
@@ -148,8 +121,22 @@
                 return;
             }
             cartItemsDiv.innerHTML = cart.map((item, index) =>
-                `<div>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</div>`
-            ).join("");
+                `<div class="cart-item">
+                    <span>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</span>
+                    <button onclick="removeFromCart(${index})">Удалить</button>
+                </div>`
+            ).join('');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function clearCart() {
+            cart.length = 0;
+            renderCart();
+            alert("Корзина очищена.");
         }
 
         function checkout() {
@@ -157,13 +144,12 @@
                 alert("Корзина пуста!");
                 return;
             }
+            // Пример для передачи данных в платёжную систему:
             Telegram.WebApp.sendData(JSON.stringify(cart));
-        }
-
-        function clearCart() {
-            cart.length = 0;
-            renderCart();
-            alert("Корзина очищена.");
+            alert("Перенаправляем на форму оплаты...");
+            // Открытие формы оплаты
+            const paymentUrl = `https://example-payment.com/pay?data=${encodeURIComponent(JSON.stringify(cart))}`;
+            window.open(paymentUrl, "_blank");
         }
     </script>
 </body>
