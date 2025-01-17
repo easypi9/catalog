@@ -73,8 +73,8 @@
     <!-- Каталог -->
     <div id="catalog" class="section">
         <h2>Каталог молебнов</h2>
-        <button class="button" onclick="addToCart('Молебен о здравии', 10)">Молебен о здравии - 10$</button>
-        <button class="button" onclick="addToCart('Молебен об успехах', 15)">Молебен об успехах - 15$</button>
+        <button class="button" onclick="addToCart('Молебен о здравии', 1000)">Молебен о здравии - 100₽</button>
+        <button class="button" onclick="addToCart('Молебен об успехах', 1500)">Молебен об успехах - 150₽</button>
         <div>
             <button class="button" onclick="showSection('main-menu')">Назад</button>
             <button class="button" onclick="showSection('cart')">Корзина</button>
@@ -122,7 +122,7 @@
             }
             cartItemsDiv.innerHTML = cart.map((item, index) =>
                 `<div class="cart-item">
-                    <span>${index + 1}. ${item.serviceName} для ${item.name} - ${item.price}$</span>
+                    <span>${index + 1}. ${item.serviceName} для ${item.name} - ${(item.price / 100).toFixed(2)}₽</span>
                     <button onclick="removeFromCart(${index})">Удалить</button>
                 </div>`
             ).join('');
@@ -144,12 +144,7 @@
                 alert("Корзина пуста!");
                 return;
             }
-            // Пример для передачи данных в платёжную систему:
-            Telegram.WebApp.sendData(JSON.stringify(cart));
             alert("Перенаправляем на форму оплаты...");
-            // Открытие формы оплаты
-            const paymentUrl = `https://example-payment.com/pay?data=${encodeURIComponent(JSON.stringify(cart))}`;
-            window.open(paymentUrl, "_blank");
         }
     </script>
 </body>
