@@ -122,30 +122,4 @@
             }
             cartItemsDiv.innerHTML = cart.map((item, index) =>
                 `<div class="cart-item">
-                    <span>${index + 1}. ${item.serviceName} для ${item.name} - ${(item.price / 100).toFixed(2)}₽</span>
-                    <button onclick="removeFromCart(${index})">Удалить</button>
-                </div>`
-            ).join('');
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
-        }
-
-        function clearCart() {
-            cart.length = 0;
-            renderCart();
-            alert("Корзина очищена.");
-        }
-
-        function checkout() {
-            if (cart.length === 0) {
-                alert("Корзина пуста!");
-                return;
-            }
-            alert("Перенаправляем на форму оплаты...");
-        }
-    </script>
-</body>
-</html>
+                    <span>${index + 1}. ${ite
